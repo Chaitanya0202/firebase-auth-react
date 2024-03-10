@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { auth } from '../FirebaseConfig';
+
 import {  signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, provider } from "../FirebaseConfig";
+import {
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import GoogleButton from "react-google-button";
 
 function LogIn() {
     const [errorMsg, setErrorMsg] = useState("");
@@ -41,6 +48,17 @@ function LogIn() {
     
 
   }
+  const googleSignButton = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      console.log(result);
+      localStorage.setItem("token", result.user.accessToken);
+      localStorage.setItem("user", JSON.stringify(result.user));
+      navigate("/wellcome");
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div className="container d-flex justify-content-center mt-4">
     <div className="" style={{ width: "30rem" }}>
@@ -73,6 +91,8 @@ function LogIn() {
       <span style={{color:'red'}}>
       {errorMsg}
       </span>
+      OR
+      <GoogleButton className="mx-auto" onClick={googleSignButton} />
      <div className="mt-4">
      <button type="button" className="mx-2 btn btn-success" onClick={submithandlerlogin}>
      Log In
